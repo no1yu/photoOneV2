@@ -11,8 +11,8 @@
 
 
 **相关项目**：
-- 小程序后端V2：https://github.com/no1xuan/HivisionIDPhotos-wechat-weapp-V2
-- 小程序管理员网页后台V2：https://github.com/no1xuan/zjzAdmin-V2
+- 小程序后端V2：https://github.com/no1xuan/HivisionIDPhotos-wechat-weappV2
+- 小程序管理员网页后台V2：https://github.com/no1xuan/zjzAdminV2
 -  HivisionIDPhotos：https://github.com/Zeyi-Lin/HivisionIDPhotos
 -  HivisionIDPhotos-Pro：https://github.com/no1yu/HivisionIDPhotos-Pro
 
