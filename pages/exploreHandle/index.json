@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "图片处理",
+  "navigationStyle": "default",
+  "usingComponents": {
+    "color-picker": "../../components/color-picker/color-picker",
+    "van-field": "@vant/weapp/field/index",
+    "van-icon": "@vant/weapp/icon/index"
+  }
+}

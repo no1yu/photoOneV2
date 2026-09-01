@@ -1,0 +1,306 @@
+page {
+  min-height: 100vh;
+  background: #f6f6f4;
+  color: #171717;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+view,
+text,
+image,
+button,
+input,
+scroll-view {
+  box-sizing: border-box;
+}
+
+image {
+  display: block;
+}
+
+button {
+  background: initial;
+  padding: 0;
+}
+
+button:focus {
+  outline: 0;
+}
+
+button::after {
+  border: none;
+}
+
+.page-shell {
+  min-height: 100vh;
+  background: #f6f6f4;
+  padding-bottom: calc(36rpx + env(safe-area-inset-bottom));
+}
+
+.page-pad {
+  padding: 28rpx;
+}
+
+.surface {
+  background: #fff;
+  border-radius: 18rpx;
+  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.06);
+}
+
+.hairline {
+  height: 1rpx;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.primary-action {
+  height: 96rpx;
+  border-radius: 10rpx;
+  background: #161616;
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 96rpx;
+  text-align: center;
+}
+
+.secondary-action {
+  height: 96rpx;
+  border-radius: 10rpx;
+  background: #fff;
+  color: #161616;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 96rpx;
+  text-align: center;
+  border: 1rpx solid rgba(0, 0, 0, 0.12);
+}
+
+.primary-action:active,
+.secondary-action:active {
+  opacity: 0.82;
+}
+
+.download-drawer-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(0, 0, 0, 0.46);
+  animation: downloadDrawerFadeIn 180ms ease-out both;
+}
+
+.download-drawer-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 820rpx;
+  padding: 28rpx 28rpx calc(28rpx + env(safe-area-inset-bottom));
+  border-radius: 28rpx 28rpx 0 0;
+  background: #fff;
+  animation: downloadDrawerUp 240ms cubic-bezier(0.18, 0.86, 0.32, 1) both;
+}
+
+.download-drawer-mask.closing {
+  pointer-events: none;
+  animation: downloadDrawerFadeOut 240ms ease-in both;
+}
+
+.download-drawer-mask.closing .download-drawer-panel {
+  animation: downloadDrawerDown 240ms ease-in both;
+}
+
+.download-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.download-drawer-title {
+  color: #2f3033;
+  font-size: 31rpx;
+  font-weight: 600;
+}
+
+.download-drawer-close {
+  width: 56rpx;
+  height: 56rpx;
+  color: #a7a8aa;
+  font-size: 38rpx;
+  line-height: 52rpx;
+  text-align: center;
+}
+
+.download-photo-summary {
+  display: flex;
+  min-height: 156rpx;
+  margin-bottom: 28rpx;
+  padding: 18rpx;
+  border-radius: 16rpx;
+  background: #f7f7f5;
+}
+
+.download-photo-thumbnail {
+  flex-shrink: 0;
+  width: 120rpx;
+  height: 156rpx;
+  border-radius: 12rpx;
+  background: #ececec;
+}
+
+.download-photo-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: 22rpx;
+  padding: 6rpx 0;
+}
+
+.download-photo-name {
+  overflow: hidden;
+  color: #3c3d40;
+  font-size: 28rpx;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.download-photo-detail {
+  margin-top: 12rpx;
+  color: #969799;
+  font-size: 24rpx;
+}
+
+.download-photo-meta {
+  margin-top: 8rpx;
+  color: #a2a3a5;
+  font-size: 22rpx;
+  line-height: 32rpx;
+}
+
+.download-method-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.download-method-item {
+  display: flex;
+  align-items: center;
+  min-height: 96rpx;
+  padding: 0 26rpx;
+  border: 2rpx solid transparent;
+  border-radius: 14rpx;
+  background: #f7f7f5;
+}
+
+.download-method-item.active {
+  border-color: #8c8d90;
+  background: #f5f5f3;
+}
+
+.download-method-radio {
+  width: 34rpx;
+  height: 34rpx;
+  margin-right: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid #aaa;
+  border-radius: 50%;
+}
+
+.download-method-item.active .download-method-radio {
+  border-color: #696a6d;
+}
+
+.download-method-radio-dot {
+  width: 18rpx;
+  height: 18rpx;
+  border-radius: 50%;
+  background: #696a6d;
+}
+
+.download-method-name {
+  flex: 1;
+  color: #48494c;
+  font-size: 27rpx;
+  font-weight: 500;
+}
+
+.download-method-price {
+  color: #e06c3b;
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.download-drawer-actions {
+  display: flex;
+  gap: 18rpx;
+  margin-top: auto;
+  padding-top: 28rpx;
+}
+
+.download-drawer-button {
+  flex: 1;
+  height: 88rpx;
+  margin: 0;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  line-height: 88rpx;
+}
+
+.download-drawer-button.cancel {
+  border: 1rpx solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  color: #171717;
+}
+
+.download-drawer-button.confirm {
+  background: #171717;
+  color: #fff;
+}
+
+.download-drawer-button:active {
+  opacity: 0.82;
+}
+
+@keyframes downloadDrawerFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes downloadDrawerUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes downloadDrawerFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes downloadDrawerDown {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}

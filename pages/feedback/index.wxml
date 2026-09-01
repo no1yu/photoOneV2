@@ -1,0 +1,48 @@
+<view class="feedback-page">
+  <view class="page-header">
+    <text class="page-title">告诉我们你的想法</text>
+    <text class="page-desc">每一条反馈都会认真阅读，帮助我们把证件照体验做得更好</text>
+  </view>
+
+  <view class="form-card">
+    <view class="form-section">
+      <view class="section-title"><text class="required">*</text>反馈类型</view>
+      <view class="type-grid">
+        <view class="type-item {{type == item.value ? 'active' : ''}}" wx:for="{{typeList}}" wx:key="value" data-value="{{item.value}}" bindtap="selectType">
+          <text>{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <view class="section-title"><text class="required">*</text>反馈内容</view>
+      <view class="textarea-box">
+        <textarea value="{{content}}" maxlength="300" placeholder="请详细描述你的建议或遇到的问题" bindinput="changeContent"></textarea>
+        <text class="word-count">{{content.length}}/300</text>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <view class="section-title">上传图片</view>
+      <view class="image-area">
+        <view class="image-item" wx:if="{{image}}">
+          <image src="{{image}}" mode="aspectFill" bindtap="previewImage"></image>
+          <view class="image-delete" catchtap="deleteImage">×</view>
+        </view>
+        <view class="image-add" wx:else bindtap="chooseImage">
+          <text class="camera-icon">＋</text>
+          <text>选择图片</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-section contact-section">
+      <view class="section-title">联系方式</view>
+      <input value="{{contact}}" maxlength="255" placeholder="如需回复，可以留下你的联系方式" bindinput="changeContact" />
+    </view>
+  </view>
+
+  <view class="submit-bar">
+    <button class="submit-button" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submitFeedback">提交反馈</button>
+  </view>
+</view>

@@ -1,0 +1,55 @@
+<view class="preEdit">
+  <view class="hero">
+    <swiper class="swiper-content" indicator-dots="{{true}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" circular disable-touch="{{false}}">
+      <block wx:for="{{swiperDatas}}" wx:key="id">
+        <swiper-item>
+          <image src="{{item.imgurl}}" class="slide-image" mode="aspectFill" />
+        </swiper-item>
+      </block>
+    </swiper>
+    <view class="hero-mask"></view>
+    <view class="hero-text">
+      <text class="hero-title">{{detail.name}}</text>
+      <text class="hero-desc">从相册选择或相机拍摄，系统将自动完成检测与制作</text>
+    </view>
+  </view>
+
+  <view class="detail-card surface" bindtap="warm">
+    <view class="card-title-row">
+      <text class="card-title">规格参数</text>
+      <text class="card-tag">{{detail.dpi}} dpi</text>
+    </view>
+    <view class="spec-grid">
+      <view class="spec-item">
+        <text class="spec-label">冲印尺寸</text>
+        <text class="spec-value">{{detail.widthMm}} × {{detail.heightMm}} mm</text>
+      </view>
+      <view class="spec-item">
+        <text class="spec-label">像素尺寸</text>
+        <text class="spec-value">{{detail.widthPx}} × {{detail.heightPx}} px</text>
+      </view>
+    </view>
+    <view class="color-row">
+      <text class="spec-label">颜色可选</text>
+      <view class="colorPick">
+        <view class="circle" style="background: #fff; border:1px solid #ddd;"></view>
+        <view class="circle" style="background: #438edb;"></view>
+        <view class="circle" style="background: #00bff3;"></view>
+        <view class="circle" style="background: #ff0000;"></view>
+        <view class="circle rainbow"></view>
+      </view>
+    </view>
+    <view class="beauty-switch" wx:if="{{beautySwitch==1}}" catchtap="noop">
+      <view>
+        <text class="spec-label">美颜开关</text>
+        <text class="switch-desc">自然修饰，保留证件照真实感</text>
+      </view>
+      <switch checked="{{isBeautyOn==1}}" bindchange="onBeautySwitch" color="#171717" style="transform:scale(0.82)"/>
+    </view>
+  </view>
+
+  <view class="bottom">
+    <view bindtap="chooseImage" class="secondary-btn">相册选择</view>
+    <view bindtap="chooseCamera" class="primary-btn">相机拍照</view>
+  </view>
+</view>

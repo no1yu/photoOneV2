@@ -1,0 +1,23 @@
+{
+  "setting": {
+    "urlCheck": false,
+    "bigPackageSizeSupport": true,
+    "coverView": true,
+    "lazyloadPlaceholderEnable": false,
+    "skylineRenderEnable": false,
+    "preloadBackgroundData": false,
+    "autoAudits": false,
+    "useApiHook": true,
+    "showShadowRootInWxmlPanel": true,
+    "useStaticServer": false,
+    "useLanDebug": false,
+    "showES6CompileOption": false,
+    "compileHotReLoad": true,
+    "checkInvalidKey": true,
+    "ignoreDevUnusedFiles": true,
+    "useIsolateContext": false
+  },
+  "libVersion": "3.15.2",
+  "condition": {},
+  "projectname": "photoOneV2"
+}

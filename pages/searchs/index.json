@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "搜索尺寸",
+  "navigationStyle": "default",
+  "usingComponents": {
+    "van-icon": "@vant/weapp/icon/index",
+    "van-search": "@vant/weapp/search/index"
+  }
+}

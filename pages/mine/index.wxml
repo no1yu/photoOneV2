@@ -1,0 +1,174 @@
+<view class="my-page">
+  <view class="profile-hero">
+    <image class="profile-blur-bg" src="{{avatarUrl}}" mode="aspectFill"></image>
+    <view class="profile-shade"></view>
+    <view class="profile-content">
+      <view class="avatar-box" wx:if="{{!authorized}}" bindtap="goLogin">
+        <image mode="aspectFill" src="{{avatarUrl}}"></image>
+      </view>
+      <view class="avatar-box" wx:else bindtap="openEditProfileModal">
+        <image mode="aspectFill" src="{{avatarUrl}}"></image>
+      </view>
+
+      <view class="profile-info" wx:if="{{!authorized}}" bindtap="goLogin">
+        <text class="hello">欢迎回来</text>
+        <text class="name">登录 / 注册</text>
+        <text class="desc">登录后同步作品、自定义尺寸和个人资料</text>
+      </view>
+
+      <view class="profile-info" wx:else bindtap="openEditProfileModal">
+        <text class="hello">Hi，</text>
+        <view class="name-row">
+          <text class="name">{{nickname}}</text>
+          <van-icon name="edit" size="17px" color="#171717" />
+        </view>
+        <text class="desc">{{title}}已经陪伴你走过 {{days}} 天</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="official-strip" wx:if="{{officialSwitch == 1}}" bindtap="openOfficialModal">
+    <view class="official-strip-copy">
+      <text class="official-strip-kicker">公众号</text>
+      <text class="official-strip-title">关注后获取照片尺寸更新</text>
+      <text class="official-strip-desc">新上规格、制作教程，快速了解第一手情报</text>
+    </view>
+    <view class="official-strip-action">去关注</view>
+  </view>
+
+  <view class="menu-section">
+    <button class="menu-row" bindtap="mywork">
+      <view class="menu-icon"><van-icon name="photo-o" size="22px" /></view>
+      <view class="menu-text">
+        <text class="menu-title">我的作品</text>
+        <text class="menu-desc">查看已经保存的照片</text>
+      </view>
+      <text class="menu-arrow">›</text>
+    </button>
+
+    <button class="menu-row" bindtap="navigateToEdit">
+      <view class="menu-icon"><van-icon name="gift-o" size="22px" /></view>
+      <view class="menu-text">
+        <text class="menu-title">我的权益</text>
+        <text class="menu-desc">查看我的可用功能</text>
+      </view>
+      <text class="menu-arrow">›</text>
+    </button>
+
+    <button class="menu-row" bindtap="openHelpList">
+      <view class="menu-icon"><van-icon name="question-o" size="22px" /></view>
+      <view class="menu-text">
+        <text class="menu-title">常见问题</text>
+        <text class="menu-desc">隐私、下载和使用说明</text>
+      </view>
+      <text class="menu-arrow">›</text>
+    </button>
+
+    <button class="menu-row" open-type="contact">
+      <view class="menu-icon"><van-icon name="service-o" size="22px" /></view>
+      <view class="menu-text">
+        <text class="menu-title">客服中心</text>
+        <text class="menu-desc">遇到问题可以直接联系我们</text>
+      </view>
+      <text class="menu-arrow">›</text>
+    </button>
+
+    <button class="menu-row" bindtap="goFeedback">
+      <view class="menu-icon"><van-icon name="comment-o" size="22px" /></view>
+      <view class="menu-text">
+        <text class="menu-title">意见反馈</text>
+        <text class="menu-desc">告诉我们你的建议和使用体验</text>
+      </view>
+      <text class="menu-arrow">›</text>
+    </button>
+
+    <button class="menu-row" open-type="share">
+      <view class="menu-icon"><van-icon name="share-o" size="22px" /></view>
+      <view class="menu-text">
+        <text class="menu-title">分享小程序</text>
+        <text class="menu-desc">推荐给需要证件照的朋友</text>
+      </view>
+      <text class="menu-arrow">›</text>
+    </button>
+  </view>
+
+  <view class="modal" wx:if="{{modalType === 'rights'}}">
+    <view class="modal-content">
+      <view class="modal-body">
+        <view class="modal-title">我的权益</view>
+        <view class="modal-list">
+          <text>你目前已经解锁全部功能，并无限制使用。</text>
+          <text>你目前享受一对一专属客服，全年极速响应。</text>
+          <text>请多多分享小程序，达标后为您解锁免广告。</text>
+        </view>
+        <button bindtap="closeModal">我明白了</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="modal" wx:if="{{modalType === 'questions'}}">
+    <view class="modal-content">
+      <view class="modal-body">
+        <view class="modal-title">常见问题</view>
+        <view class="modal-list">
+          <text wx:if="{{helpLoading}}">加载中</text>
+          <block wx:else>
+            <text wx:for="{{helpList}}" wx:key="id">{{item.title}}：{{item.content}}</text>
+          </block>
+        </view>
+        <button bindtap="closeModal">我明白了</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="sheet-modal" wx:if="{{modalType === 'editProfile'}}" catchtap="closeModal">
+    <view class="sheet-content" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <view class="sheet-head">
+        <view>
+          <text class="sheet-title">编辑个人资料</text>
+          <text class="sheet-desc">头像和昵称会展示在我的页面</text>
+        </view>
+        <view class="sheet-close" bindtap="closeModal">
+          <van-icon name="cross" size="20px" color="#171717" />
+        </view>
+      </view>
+      <view class="modal-body">
+        <view class="edit-profile-form">
+          <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+            <image class="avatar" src="{{avatarFile}}" mode="aspectFill"></image>
+            <view class="overlay">
+              <van-icon name="photograph" size="24px" color="#fff" />
+              <text class="overlay-text">更换头像</text>
+            </view>
+          </button>
+          <view class="nickname-field">
+            <text class="nickname-label">昵称</text>
+            <input type="nickname" class="nickname-input" placeholder="请输入昵称（非必填）" value="{{nicknameFile}}" bindinput="onNicknameInput" />
+          </view>
+        </view>
+        <button class="save-button" bindtap="updateUserInfo">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="sheet-modal official-modal" wx:if="{{modalType === 'official' && officialSwitch == 1}}" catchtap="closeModal">
+    <view class="sheet-content" catchtap="noop">
+      <view class="sheet-handle"></view>
+      <view class="sheet-head">
+        <view>
+          <text class="sheet-title">关注公众号</text>
+          <text class="sheet-desc">尺寸更新、制作教程和活动提醒都会放在这里</text>
+        </view>
+        <view class="sheet-close" bindtap="closeModal">
+          <van-icon name="cross" size="20px" color="#171717" />
+        </view>
+      </view>
+      <view class="official-qr-box">
+        <image class="official-qr" src="{{officialQrCode}}" mode="aspectFit" show-menu-by-longpress="{{true}}"></image>
+        <text class="official-qr-tip">长按识别二维码关注公众号</text>
+        <button class="official-save-button" bindtap="saveOfficialQrCode">保存二维码</button>
+      </view>
+    </view>
+  </view>
+</view>

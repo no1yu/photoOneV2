@@ -1,0 +1,73 @@
+<view class="home-page">
+  <view class="hero">
+    <swiper class="hero-swiper" indicator-dots="{{true}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" circular>
+      <block wx:for="{{swiperDatas}}" wx:key="id">
+        <swiper-item>
+          <image src="{{item.imgurl}}" class="hero-image" mode="aspectFill"></image>
+        </swiper-item>
+      </block>
+    </swiper>
+    <view class="hero-shade"></view>
+    <view class="hero-content">
+      <text class="hero-title">轻松制作证件照</text>
+      <text class="hero-desc">超千万用户的选择，换底色、换正装、制作排版照，一次轻松搞定！</text>
+    </view>
+  </view>
+
+  <view class="quick-panel surface">
+    <view class="quick-main" bindtap="navigateTo" data-url="/pages/sizeList/index">
+      <image src="../../images/home/build.png" mode="aspectFit" class="quick-main-img"></image>
+      <view class="quick-main-text">
+        <text class="quick-title">制作证件照</text>
+        <text class="quick-desc">常用尺寸、签证、考试报名</text>
+      </view>
+      <text class="quick-arrow">›</text>
+    </view>
+    <view class="quick-grid">
+      <view class="quick-item" bindtap="navigateTo" data-url="/pages/searchs/index">
+        <image src="../../images/home/search.png" mode="aspectFit"></image>
+        <text>搜索尺寸</text>
+      </view>
+      <view class="quick-item" bindtap="loginJump" data-url="/pages/custom/index">
+        <image src="../../images/home/custom.png" mode="aspectFit"></image>
+        <text>定制尺寸</text>
+      </view>
+      <view class="quick-item" bindtap="loginJump" data-url="/pages/works/index">
+        <image src="../../images/home/my-photo.png" mode="aspectFit"></image>
+        <text>我的作品</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="service-section">
+    <view class="section-head">
+      <view>
+        <text class="section-title">热门新品</text>
+        <text class="section-subtitle">近期上线的照片玩法</text>
+      </view>
+      <text class="section-more" bindtap="navigateTo" data-url="/pages/explore/index">全部</text>
+    </view>
+    <view class="service-row">
+      <view class="service-card" bindtap="openExploreFeature" data-app-id="9" data-title="美式证件照">
+        <image class="service-cover" src="../../images/home/9.jpg" mode="aspectFill"></image>
+        <view class="service-copy">
+          <text class="service-title">美式证件照</text>
+          <text class="service-desc">小红书爆款证件照，在家也能拍出啦</text>
+        </view>
+      </view>
+      <view class="service-card" bindtap="openExploreFeature" data-app-id="16" data-title="情侣红底照">
+        <image class="service-cover" src="../../images/home/16.jpg" mode="aspectFill"></image>
+        <view class="service-copy">
+          <text class="service-title">情侣红底照</text>
+          <text class="service-desc">和最爱的人一起体验新中式证件照，定格属于你们的东方浪漫</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="login-prompt" wx:if="{{!authorized && loginType}}">
+    <text>你不登录，我就不走啦 (｡•́︿•̀｡)</text>
+    <button wx:if="{{loginType === 1}}" class="login-button" bindtap="login">立即登录</button>
+    <button wx:elif="{{loginType === 2}}" class="login-button" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">立即登录</button>
+  </view>
+</view>

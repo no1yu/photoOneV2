@@ -1,0 +1,54 @@
+<view class="size-page">
+  <view class="page-header">
+    <text class="page-title">选择证件照规格</text>
+    <text class="page-subtitle">覆盖常用证件、签证、考试报名与自定义规格</text>
+  </view>
+
+  <view class="tabs-wrap">
+    <van-tabs active="{{active}}" use-before-change="{{true}}" bind:before-change="beforeTabChange" bind:click="clickTab" color="#171717" line-width="28px" sticky animated swipeable>
+      <van-tab title="常用尺寸" name="1"></van-tab>
+      <van-tab title="各类证件" name="3"></van-tab>
+      <van-tab title="各类签证" name="2"></van-tab>
+      <van-tab title="我的定制" name="4"></van-tab>
+      <van-tab title="搜索" name="5"></van-tab>
+    </van-tabs>
+  </view>
+
+  <scroll-view
+    class="container"
+    scroll-y
+    bindscrolltolower="moredata"
+    bindscroll="onPageScroll"
+    scroll-top="{{scrollTop}}"
+    scroll-with-animation
+    enhanced
+    show-scrollbar="{{false}}"
+  >
+    <view class="grid-container">
+      <view class="grid-item" wx:for="{{photoSizeList}}" wx:key="id" data-index="{{index}}" bindtap="goNextPage">
+        <view class="thumb">
+          <image class="grid-image" src="/images/sizes/{{item.icon}}.png" mode="aspectFit" lazy-load></image>
+        </view>
+        <view class="grid-content">
+          <view class="title">{{item.name}}</view>
+          <view class="description">{{item.widthPx}} × {{item.heightPx}} px</view>
+          <view class="description muted">{{item.widthMm}} × {{item.heightMm}} mm · {{item.dpi}} dpi</view>
+        </view>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+    <view class="custom-empty" wx:if="{{category == 4 && !loadingMore && !photoSizeList.length && !hasMoreData}}">
+      <image src="/images/none.png" mode="aspectFit"></image>
+      <text class="custom-empty-title">暂无定制尺寸</text>
+      <text class="custom-empty-desc">你保存的定制规格会显示在这里</text>
+    </view>
+    <view class="list-status" wx:if="{{photoSizeList.length}}">
+      <text wx:if="{{loadingMore}}">正在加载更多...</text>
+      <text wx:elif="{{hasMoreData}}">上拉加载更多</text>
+    </view>
+  </scroll-view>
+
+  <view class="scroll-to-top" wx:if="{{showBackTop}}" bindtap="scrollToTop" hover-class="scroll-to-top-hover">
+    <van-icon name="arrow-up" size="22px" color="#fff"/>
+  </view>
+</view>

@@ -1,0 +1,400 @@
+<view class="explore-handle-page {{resultUrl ? 'result-state' : ''}}">
+  <view class="image-section">
+    <view class="image-workspace {{resultUrl && isMatting ? 'transparent-workspace' : ''}} {{processing ? 'processing-workspace' : ''}}">
+      <view wx:if="{{processing}}" class="processing-content">
+        <view class="sketch-animation">
+          <view class="sketch-line sketch-line-top"></view>
+          <view class="sketch-line sketch-line-right"></view>
+          <view class="sketch-line sketch-line-bottom"></view>
+          <view class="sketch-line sketch-line-left"></view>
+          <view class="sketch-sun"></view>
+          <view class="sketch-mountain sketch-mountain-left"></view>
+          <view class="sketch-mountain sketch-mountain-right"></view>
+          <view class="sketch-brush">
+            <van-icon name="brush-o" size="52rpx" color="#171717" />
+          </view>
+        </view>
+        <text class="processing-title">制作中</text>
+        <view class="processing-dots">
+          <view></view>
+          <view></view>
+          <view></view>
+        </view>
+      </view>
+
+      <block wx:elif="{{resultUrl}}">
+        <image
+          class="workspace-image"
+          src="{{resultUrl}}"
+          mode="aspectFit"
+        ></image>
+
+        <!-- 广告或付费模式未解锁时只在页面覆盖水印，后端下载仍返回无水印原图 -->
+        <image
+          class="download-watermark"
+          src="../../images/wmark.png"
+          mode="widthFix"
+        ></image>
+      </block>
+
+      <image
+        wx:elif="{{selectedImagePath}}"
+        class="workspace-image"
+        src="{{selectedImagePath}}"
+        mode="aspectFit"
+        bindtap="chooseImage"
+      ></image>
+
+      <view wx:else class="upload-empty" bindtap="chooseImage">
+        <van-icon name="photo-o" size="74rpx" color="#a0a0a0" />
+        <text>上传图片</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{!resultUrl}}" class="control-panel {{processing ? 'control-panel-disabled' : ''}} {{hasParams ? '' : 'control-panel-simple'}}">
+    <view class="file-info-bar">
+      <view class="file-info-item file-info-left">
+        <text class="file-info-text">文件格式：{{selectedFileFormat || '--'}}</text>
+      </view>
+      <view class="file-info-item file-info-center">
+        <text class="file-info-text">文件大小：{{selectedFileSize || '--'}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{hasParams}}" class="params-section">
+      <view wx:if="{{needsFormatParams}}" class="inline-option-block">
+        <text class="inline-option-title">转换格式</text>
+        <view class="format-options">
+          <view class="format-option {{targetFormat === 'jpg' ? 'active' : ''}}" data-value="jpg" bindtap="selectTargetFormat">JPG</view>
+          <view class="format-option {{targetFormat === 'jpeg' ? 'active' : ''}}" data-value="jpeg" bindtap="selectTargetFormat">JPEG</view>
+          <view class="format-option {{targetFormat === 'png' ? 'active' : ''}}" data-value="png" bindtap="selectTargetFormat">PNG</view>
+          <view class="format-option {{targetFormat === 'gif' ? 'active' : ''}}" data-value="gif" bindtap="selectTargetFormat">GIF</view>
+        </view>
+      </view>
+
+      <view wx:if="{{needsLayoutParams}}" class="inline-option-block">
+        <text class="inline-option-title">画布尺寸</text>
+        <view class="layout-options">
+          <view
+            wx:for="{{layoutActions}}"
+            wx:key="value"
+            class="layout-option {{layoutSize === item.value ? 'active' : ''}}"
+            data-value="{{item.value}}"
+            bindtap="selectLayoutSize"
+          >{{item.name}}</view>
+        </view>
+      </view>
+
+      <block wx:if="{{needsLayoutParams && layoutSize === 'custom'}}">
+        <view class="parameter-row">
+          <van-field
+            custom-class="parameter-field"
+            type="digit"
+            label="画布宽度*："
+            title-width="190rpx"
+            value="{{layoutWidth}}"
+            placeholder="必填"
+            disabled="{{processing}}"
+            bind:input="onLayoutWidthInput"
+          />
+        </view>
+
+        <view class="parameter-row">
+          <van-field
+            custom-class="parameter-field"
+            type="digit"
+            label="画布高度*："
+            title-width="190rpx"
+            value="{{layoutHeight}}"
+            placeholder="必填"
+            disabled="{{processing}}"
+            bind:input="onLayoutHeightInput"
+          />
+        </view>
+      </block>
+
+      <view wx:if="{{needsLayoutParams}}" class="parameter-row crop-line-row">
+        <text class="parameter-label">裁剪线</text>
+        <switch checked="{{cropLine === 1}}" disabled="{{processing}}" color="#171717" style="transform:scale(0.82)" bindchange="onCropLineChange" />
+      </view>
+
+      <view wx:if="{{needsTemplateParams}}" class="inline-option-block">
+        <text class="inline-option-title">选择模板</text>
+        <view class="template-options">
+          <view
+            wx:for="{{templateActions}}"
+            wx:key="value"
+            class="template-option {{templateName === item.value ? 'active' : ''}}"
+            data-value="{{item.value}}"
+            bindtap="onTemplateSelect"
+          >{{item.name}}</view>
+        </view>
+        <view class="template-preview">
+          <image
+            class="template-preview-image"
+            src="{{templateName === 'template_2' ? '../../images/home/10-2.png' : '../../images/home/10-1.png'}}"
+            mode="aspectFit"
+          ></image>
+        </view>
+      </view>
+
+      <view wx:if="{{needsCoupleParams}}" class="inline-option-block">
+        <text class="inline-option-title">背景颜色</text>
+        <view class="couple-color-options">
+          <view
+            wx:for="{{coupleColorOptions}}"
+            wx:key="value"
+            class="couple-color-option {{color === item.value ? 'active' : ''}}"
+            data-value="{{item.value}}"
+            bindtap="selectColor"
+          >
+            <view class="couple-color-preview" style="{{item.style}}">
+              <van-icon wx:if="{{color === item.value}}" name="success" size="24rpx" color="#ffffff" />
+            </view>
+            <text>{{item.name}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view wx:if="{{needsTemplateParams || needsWatermarkParams}}" class="inline-option-block">
+        <view class="color-heading">
+          <text class="inline-option-title">{{needsWatermarkParams ? '水印颜色' : '模板颜色'}}</text>
+          <button
+            class="custom-color-button"
+            disabled="{{processing}}"
+            bindtap="openColorPicker"
+          >自定义</button>
+        </view>
+        <view class="color-options">
+          <view
+            wx:for="{{colorOptions}}"
+            wx:key="*this"
+            class="color-option {{color === item ? 'active' : ''}}"
+            style="background-color: {{item}};"
+            data-value="{{item}}"
+            bindtap="selectColor"
+          >
+            <van-icon wx:if="{{color === item}}" name="success" size="26rpx" color="{{item === '#ffffff' ? '#171717' : '#ffffff'}}" />
+          </view>
+        </view>
+      </view>
+
+      <block wx:if="{{needsWatermarkParams}}">
+        <view class="parameter-row">
+          <van-field
+            custom-class="parameter-field"
+            label="水印文字*："
+            title-width="190rpx"
+            value="{{watermarkText}}"
+            maxlength="30"
+            placeholder="请输入水印文字"
+            disabled="{{processing}}"
+            bind:input="onWatermarkTextInput"
+          />
+        </view>
+
+        <view class="parameter-row watermark-style-row">
+          <text class="parameter-label">水印样式</text>
+          <view class="watermark-style-options">
+            <view
+              class="watermark-style-option {{watermarkStyle === 'striped' ? 'active' : ''}}"
+              data-value="striped"
+              bindtap="selectWatermarkStyle"
+            >斜纹铺满</view>
+            <view
+              class="watermark-style-option {{watermarkStyle === 'central' ? 'active' : ''}}"
+              data-value="central"
+              bindtap="selectWatermarkStyle"
+            >居中显示</view>
+          </view>
+        </view>
+
+        <view class="parameter-row">
+          <van-field
+            custom-class="parameter-field"
+            type="digit"
+            label="透明度*："
+            title-width="190rpx"
+            value="{{watermarkOpacity}}"
+            placeholder="1-80"
+            disabled="{{processing}}"
+            bind:input="onWatermarkOpacityInput"
+          />
+        </view>
+
+        <view class="parameter-row">
+          <van-field
+            custom-class="parameter-field"
+            type="digit"
+            label="字体大小*："
+            title-width="190rpx"
+            value="{{watermarkSize}}"
+            placeholder="10-100"
+            disabled="{{processing}}"
+            bind:input="onWatermarkSizeInput"
+          />
+        </view>
+
+        <view class="parameter-row">
+          <van-field
+            custom-class="parameter-field"
+            type="digit"
+            label="旋转角度*："
+            title-width="190rpx"
+            value="{{watermarkAngle}}"
+            placeholder="0-360"
+            disabled="{{processing}}"
+            bind:input="onWatermarkAngleInput"
+          />
+        </view>
+
+        <view wx:if="{{watermarkStyle === 'striped'}}" class="parameter-row">
+          <van-field
+            custom-class="parameter-field"
+            type="digit"
+            label="水印间距*："
+            title-width="190rpx"
+            value="{{watermarkSpace}}"
+            placeholder="10-200"
+            disabled="{{processing}}"
+            bind:input="onWatermarkSpaceInput"
+          />
+        </view>
+      </block>
+
+      <block wx:if="{{needsLayoutParams || needsAmericanParams || needsTemplateParams}}">
+        <view class="parameter-row">
+          <van-field
+            custom-class="parameter-field"
+            type="digit"
+            label="{{needsLayoutParams ? '单张宽度：' : '宽度：'}}"
+            title-width="190rpx"
+            value="{{width}}"
+            placeholder="非必填，默认295"
+            disabled="{{processing}}"
+            bind:input="onWidthInput"
+          />
+        </view>
+
+        <view class="parameter-row">
+          <van-field
+            custom-class="parameter-field"
+            type="digit"
+            label="{{needsLayoutParams ? '单张高度：' : '高度：'}}"
+            title-width="190rpx"
+            value="{{height}}"
+            placeholder="非必填，默认413"
+            disabled="{{processing}}"
+            bind:input="onHeightInput"
+          />
+        </view>
+
+        <view class="parameter-row">
+          <van-field
+            custom-class="parameter-field"
+            type="digit"
+            label="KB："
+            title-width="190rpx"
+            value="{{kb}}"
+            placeholder="非必填，默认不限制，最低1KB"
+            disabled="{{processing}}"
+            bind:input="onKbInput"
+          />
+        </view>
+      </block>
+
+      <view wx:if="{{needsCompressParams}}" class="parameter-row">
+        <van-field
+          custom-class="parameter-field"
+          type="digit"
+          label="目标KB*："
+          title-width="190rpx"
+          value="{{kb}}"
+          placeholder="必填，最低1KB"
+          disabled="{{processing}}"
+          bind:input="onKbInput"
+        />
+      </view>
+
+      <view wx:if="{{needsParams || needsAmericanParams || needsTemplateParams || needsCompressParams}}" class="parameter-row">
+        <van-field
+          custom-class="parameter-field"
+          type="digit"
+          label="DPI："
+          title-width="190rpx"
+          value="{{dpi}}"
+          placeholder="非必填，默认300，最低72"
+          disabled="{{processing}}"
+          bind:input="onDpiInput"
+        />
+      </view>
+    </view>
+
+  </view>
+
+  <view class="page-footer">
+    <block wx:if="{{resultUrl}}">
+      <button class="footer-button secondary-button" bindtap="resetPage">返回</button>
+      <!-- 点击保存后再按照后台配置执行免费、广告或微信支付下载 -->
+      <button class="footer-button primary-button" bindtap="downloadPic">保存照片</button>
+    </block>
+
+    <button
+      wx:else
+      class="footer-button primary-button single-button {{processing ? 'button-processing' : ''}}"
+      bindtap="startProcess"
+    >
+      <view wx:if="{{processing}}" class="button-processing-content">
+        <text>制作中</text>
+        <view class="button-processing-spinner"></view>
+      </view>
+      <text wx:else>开始制作</text>
+    </button>
+  </view>
+
+  <color-picker
+    wx:if="{{pick}}"
+    bindchangeColor="pickTemplateColor"
+    bindclose="hideTemplateColorPicker"
+    initColor="{{colorPickerInit}}"
+    show="{{pick}}"
+  />
+
+  <view wx:if="{{downloadDrawerVisible}}" class="download-drawer-mask {{downloadDrawerClosing ? 'closing' : ''}}" catchtap="closeDownloadDrawer" catchtouchmove="noop">
+    <view class="download-drawer-panel" catchtap="noop">
+      <view class="download-drawer-header">
+        <text class="download-drawer-title">下载方式</text>
+        <text class="download-drawer-close" catchtap="closeDownloadDrawer">×</text>
+      </view>
+      <view class="download-photo-summary">
+        <image class="download-photo-thumbnail" src="{{resultUrl}}" mode="aspectFill"></image>
+        <view class="download-photo-info">
+          <text class="download-photo-name">{{title}}</text>
+          <text class="download-photo-detail">高清无水印照片</text>
+          <text wx:if="{{downloadPhotoMeta}}" class="download-photo-meta">{{downloadPhotoMeta}}</text>
+        </view>
+      </view>
+      <view class="download-method-list">
+        <view
+          wx:for="{{downloadOptions}}"
+          wx:key="method"
+          class="download-method-item {{selectedDownloadMethod === item.method ? 'active' : ''}}"
+          data-method="{{item.method}}"
+          bindtap="selectDownloadMethod"
+        >
+          <view class="download-method-radio">
+            <view wx:if="{{selectedDownloadMethod === item.method}}" class="download-method-radio-dot"></view>
+          </view>
+          <text class="download-method-name">{{item.name}}</text>
+          <text wx:if="{{item.price}}" class="download-method-price">{{item.price}}</text>
+        </view>
+      </view>
+      <view class="download-drawer-actions">
+        <button class="download-drawer-button cancel" bindtap="closeDownloadDrawer">取消</button>
+        <button class="download-drawer-button confirm" bindtap="confirmDownloadMethod">确定</button>
+      </view>
+    </view>
+  </view>
+
+</view>

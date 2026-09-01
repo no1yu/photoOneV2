@@ -1,0 +1,29 @@
+<view class="works">
+  <view class="page-header">
+    <text class="page-title">我的作品</text>
+    <text class="page-desc">仅记录下载过的，数据仅保留7天，请及时保存下载</text>
+  </view>
+
+  <view class="photo-grid" wx:if="{{workList.length}}">
+    <view class="photo-card" wx:for="{{workList}}" wx:key="id">
+      <view class="photo-preview">
+        <image src="{{item.nimg}}" data-url="{{item.nimg}}" bindtap="preView" mode="aspectFill"></image>
+      </view>
+      <view class="photo-info">
+        <view class="photo-name">{{item.name}}</view>
+        <view class="photo-size">{{item.size}} px</view>
+        <view class="photo-time">{{item.createTime}}</view>
+      </view>
+      <view class="photo-actions">
+        <van-button custom-class="download-btn" color="#171717" size="small" data-url="{{item.nimg}}" bindtap="savePicUrlAndImg">下载</van-button>
+        <van-button custom-class="delete-btn" plain color="#b6423c" size="small" data-id="{{item.id}}" bindtap="remove">删除</van-button>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:else>
+    <image src="/images/none.png" mode="aspectFit"></image>
+    <text>暂无作品</text>
+    <view class="empty-action">完成一次下载后会自动保存到这里</view>
+  </view>
+</view>

@@ -1,0 +1,122 @@
+page {
+  min-height: 100%;
+  background: #f6f6f4;
+}
+
+.admin-page {
+  min-height: 100vh;
+  padding: calc(env(safe-area-inset-top) + 72rpx) 28rpx calc(env(safe-area-inset-bottom) + 72rpx);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6f6f4;
+}
+
+.close-button {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 22rpx);
+  left: 28rpx;
+  z-index: 2;
+  width: 72rpx;
+  height: 72rpx;
+  margin: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #171717;
+  font-size: 42rpx;
+  font-weight: 300;
+  line-height: 68rpx;
+}
+
+.close-button::after,
+.authorize-button::after,
+.cancel-button::after {
+  border: none;
+}
+
+.auth-card {
+  width: 100%;
+  padding: 58rpx 34rpx 34rpx;
+  border-radius: 18rpx;
+  background: #fff;
+  box-shadow: 0 16rpx 44rpx rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.security-mark {
+  width: 112rpx;
+  height: 112rpx;
+  margin: 0 auto 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24rpx;
+  background: #171717;
+}
+
+.lock-shackle {
+  width: 38rpx;
+  height: 30rpx;
+  border: 7rpx solid #fff;
+  border-bottom: 0;
+  border-radius: 22rpx 22rpx 0 0;
+}
+
+.lock-body {
+  width: 58rpx;
+  height: 46rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8rpx;
+  background: #fff;
+}
+
+.lock-dot {
+  width: 8rpx;
+  height: 14rpx;
+  border-radius: 999rpx;
+  background: #171717;
+}
+
+.success-mark {
+  color: #fff;
+  font-size: 48rpx;
+  font-weight: 700;
+  line-height: 112rpx;
+}
+
+.card-title,
+.card-desc {
+  display: block;
+}
+
+.card-title {
+  color: #171717;
+  font-size: 38rpx;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.card-desc {
+  margin-top: 12rpx;
+  color: #858585;
+  font-size: 25rpx;
+  line-height: 1.5;
+}
+
+.authorize-button {
+  width: 100%;
+  margin-top: 46rpx;
+}
+
+.cancel-button {
+  width: 100%;
+  height: 88rpx;
+  margin-top: 12rpx;
+  background: transparent;
+  color: #777;
+  font-size: 27rpx;
+  line-height: 88rpx;
+}

@@ -1,0 +1,126 @@
+page {
+  background: #f6f6f4;
+}
+
+.works {
+  min-height: 100vh;
+  padding: 34rpx 28rpx 56rpx;
+  box-sizing: border-box;
+}
+
+.page-header {
+  padding: 18rpx 4rpx 28rpx;
+}
+
+.page-title {
+  display: block;
+  color: #171717;
+  font-size: 46rpx;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.page-desc {
+  display: block;
+  margin-top: 12rpx;
+  color: #777;
+  font-size: 25rpx;
+  line-height: 1.45;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20rpx;
+}
+
+.photo-card {
+  overflow: hidden;
+  background: #fff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  border-radius: 14rpx;
+  box-shadow: 0 18rpx 42rpx rgba(16, 16, 16, 0.08);
+}
+
+.photo-preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 6;
+  overflow: hidden;
+  background: #eceae6;
+}
+
+.photo-preview image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.photo-info {
+  padding: 18rpx 18rpx 12rpx;
+}
+
+.photo-name {
+  overflow: hidden;
+  color: #171717;
+  font-size: 28rpx;
+  font-weight: 800;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.photo-size,
+.photo-time {
+  display: block;
+  margin-top: 8rpx;
+  color: #8a8a8a;
+  font-size: 22rpx;
+  line-height: 1.35;
+}
+
+.photo-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12rpx;
+  padding: 6rpx 18rpx 20rpx;
+}
+
+.download-btn,
+.delete-btn {
+  width: 100%;
+  height: 60rpx !important;
+  border-radius: 8rpx !important;
+  font-size: 24rpx !important;
+}
+
+.empty-state {
+  margin-top: 70rpx;
+  padding: 64rpx 36rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  border-radius: 14rpx;
+}
+
+.empty-state image {
+  width: 260rpx;
+  height: 260rpx;
+  margin-bottom: 22rpx;
+}
+
+.empty-state text {
+  color: #171717;
+  font-size: 31rpx;
+  font-weight: 800;
+}
+
+.empty-action {
+  margin-top: 10rpx;
+  color: #858585;
+  font-size: 24rpx;
+  line-height: 1.45;
+}

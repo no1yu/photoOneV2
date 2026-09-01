@@ -1,0 +1,38 @@
+<view class="explore-page">
+  <view class="explore-hero">
+    <text class="hero-title">探索神奇的魔力🪄</text>
+    <text class="hero-subtitle">让照片处理变得简单有趣✨</text>
+  </view>
+
+  <block wx:for="{{applications}}" wx:for-index="index" wx:key="id">
+    <view wx:if="{{index == 0}}" class="featured-card" bindtap="navigateTo" data-app-id="{{item.id}}" data-title="{{item.name}}">
+      <image class="featured-image" mode="aspectFill" src="{{item.image}}"></image>
+      <view class="featured-mask"></view>
+      <view class="featured-content">
+        <view class="featured-tag">新品 · {{item.useCount}}次使用</view>
+        <text class="featured-title">{{item.name}}</text>
+        <text class="featured-desc">{{item.description}}</text>
+      </view>
+    </view>
+  </block>
+
+  <view class="service-list">
+    <view
+      wx:for="{{applications}}"
+      wx:for-index="index"
+      wx:key="id"
+      wx:if="{{index != 0}}"
+      class="service-card"
+      bindtap="navigateTo"
+      data-app-id="{{item.id}}"
+      data-title="{{item.name}}"
+    >
+      <image class="service-image" mode="aspectFill" src="{{item.image}}"></image>
+      <view class="service-info">
+        <text class="service-title">{{item.name}}</text>
+        <text class="service-desc">{{item.description}}</text>
+        <text class="service-meta">{{item.useCount}}次使用</text>
+      </view>
+    </view>
+  </view>
+</view>

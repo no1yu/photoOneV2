@@ -1,0 +1,127 @@
+.dialog {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.dialog_show {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.weui-mask {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.weui-actionsheet {
+  position: fixed;
+  z-index: 5000;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
+  border-radius: 24rpx 24rpx 0 0;
+  background-color: #fff;
+  transform: translateY(100%);
+  transition: transform 0.3s;
+}
+
+.weui-actionsheet_toggle {
+  transform: translateY(0);
+}
+
+.weui-half-screen-dialog__hd {
+  display: flex;
+  align-items: center;
+  height: 128rpx;
+  padding: 0 48rpx;
+}
+
+.weui-half-screen-dialog__hd__side {
+  position: relative;
+  left: -16rpx;
+  width: 64rpx;
+  height: 64rpx;
+}
+
+.weui-icon-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 48rpx;
+  height: 48rpx;
+  transform: translate(-50%, -50%);
+}
+
+.weui-icon-close-thin::before,
+.weui-icon-close-thin::after {
+  position: absolute;
+  top: 23rpx;
+  left: 8rpx;
+  width: 32rpx;
+  height: 2rpx;
+  border-radius: 2rpx;
+  background-color: #606266;
+  content: '''';
+}
+
+.weui-icon-close-thin::before {
+  transform: rotate(45deg);
+}
+
+.weui-icon-close-thin::after {
+  transform: rotate(-45deg);
+}
+
+.weui-half-screen-dialog__hd__main {
+  flex: 1;
+  padding-right: 48rpx;
+  text-align: center;
+}
+
+.weui-half-screen-dialog__title {
+  display: block;
+  color: rgba(0, 0, 0, 0.9);
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.weui-half-screen-dialog__subtitle {
+  display: block;
+  margin-top: 4rpx;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 20rpx;
+}
+
+.target {
+  width: 600rpx;
+  height: 600rpx;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1rpx solid rgba(0, 0, 0, 0.12);
+  background-image: linear-gradient(to bottom, transparent, #000), linear-gradient(to right, #fff, rgba(255, 255, 255, 0));
+}
+
+.color-point {
+  box-sizing: border-box;
+  width: 28px;
+  height: 28px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.ribbon {
+  width: 600rpx;
+  margin: 40rpx auto;
+  background: linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
+}

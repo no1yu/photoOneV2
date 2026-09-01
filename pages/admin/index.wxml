@@ -1,0 +1,21 @@
+<view class="admin-page">
+  <button class="close-button" bindtap="closeLogin" aria-label="关闭">×</button>
+
+  <view wx:if="{{!isAuthorized}}" class="auth-card">
+    <view class="security-mark">
+      <view class="lock-shackle"></view>
+      <view class="lock-body"><view class="lock-dot"></view></view>
+    </view>
+    <text class="card-title">登录</text>
+    <text class="card-desc">确认登录网页后台</text>
+    <button class="primary-action authorize-button" loading="{{submitting}}" disabled="{{submitting}}" bindtap="login">确认登录</button>
+    <button class="cancel-button" disabled="{{submitting}}" bindtap="closeLogin">取消</button>
+  </view>
+
+  <view wx:else class="auth-card">
+    <view class="security-mark success-mark">✓</view>
+    <text class="card-title">登录成功</text>
+    <text class="card-desc">已完成，请查看网页后台</text>
+    <button class="primary-action authorize-button" bindtap="closeLogin">好的</button>
+  </view>
+</view>

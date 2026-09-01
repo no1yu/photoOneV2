@@ -1,0 +1,40 @@
+<view class="search-page">
+  <view class="page-header">
+    <text class="page-title">搜索规格</text>
+    <text class="page-subtitle">输入关键词，如：一寸、签证、考试报名</text>
+  </view>
+
+  <view class="search-card">
+    <van-search value="{{value}}" bind:change="onChange" placeholder="请输入关键词,如：一寸" shape="round" />
+  </view>
+
+  <scroll-view class="container" scroll-y bindscrolltolower="moredata" bindscroll="onPageScroll" lower-threshold="160" scroll-top="{{scrollTop}}" scroll-with-animation enhanced show-scrollbar="{{false}}">
+    <view class="grid-container">
+      <view class="grid-item" wx:for="{{photoSizeList}}" wx:key="id" data-index="{{index}}" bindtap="goNextPage">
+        <view class="thumb">
+          <image class="grid-image" src="/images/sizes/{{item.icon}}.png" mode="aspectFit" lazy-load></image>
+        </view>
+        <view class="grid-content">
+          <view class="title">{{item.name}}</view>
+          <view class="description">{{item.widthPx}} × {{item.heightPx}} px</view>
+          <view class="description muted">{{item.widthMm}} × {{item.heightMm}} mm · {{item.dpi}} dpi</view>
+        </view>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!loading && !photoSizeList.length}}">
+      <image src="/images/none.png" mode="aspectFit"></image>
+      <text>输入关键词开始查找规格</text>
+    </view>
+
+    <view class="list-status" wx:if="{{photoSizeList.length}}">
+      <text wx:if="{{loading}}">正在加载更多...</text>
+      <text wx:elif="{{hasMore}}">上拉加载更多</text>
+    </view>
+  </scroll-view>
+
+  <view class="scroll-to-top" wx:if="{{showBackTop}}" bindtap="scrollToTop" hover-class="scroll-to-top-hover">
+    <van-icon name="arrow-up" size="22px" color="#fff"/>
+  </view>
+</view>

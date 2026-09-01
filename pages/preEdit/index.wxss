@@ -1,0 +1,179 @@
+.preEdit {
+  min-height: 100vh;
+  background: #f6f6f4;
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
+}
+
+.hero {
+  position: relative;
+  height: 52vh;
+  min-height: 650rpx;
+  overflow: hidden;
+  background: #111;
+}
+
+.swiper-content,
+.slide-image {
+  width: 100%;
+  height: 100%;
+}
+
+.hero-mask {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.42));
+  pointer-events: none;
+}
+
+.hero-text {
+  position: absolute;
+  left: 36rpx;
+  right: 36rpx;
+  bottom: 62rpx;
+  color: #fff;
+  pointer-events: none;
+}
+
+.hero-title {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 50rpx;
+  font-weight: 800;
+  line-height: 1.18;
+}
+
+.hero-desc {
+  display: block;
+  margin-top: 14rpx;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 26rpx;
+  line-height: 1.55;
+}
+
+.detail-card {
+  position: relative;
+  z-index: 2;
+  margin: -44rpx 28rpx 0;
+  padding: 30rpx;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 24rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.card-title {
+  color: #171717;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.card-tag {
+  height: 44rpx;
+  padding: 0 18rpx;
+  border-radius: 999rpx;
+  background: #171717;
+  color: #fff;
+  font-size: 22rpx;
+  line-height: 44rpx;
+}
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18rpx;
+  padding: 26rpx 0;
+}
+
+.spec-item {
+  min-height: 116rpx;
+  padding: 20rpx;
+  border-radius: 14rpx;
+  background: #f7f7f5;
+}
+
+.spec-label {
+  display: block;
+  color: #8a8a8a;
+  font-size: 23rpx;
+  line-height: 1.4;
+}
+
+.spec-value {
+  display: block;
+  margin-top: 10rpx;
+  color: #171717;
+  font-size: 27rpx;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.color-row,
+.beauty-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22rpx 0;
+  border-top: 1rpx solid #eee;
+}
+
+.colorPick {
+  display: flex;
+  align-items: center;
+}
+
+.circle {
+  width: 34rpx;
+  height: 34rpx;
+  margin-left: 14rpx;
+  border-radius: 50%;
+}
+
+.rainbow {
+  background: linear-gradient(135deg, #ff7f7f, #ffbf80, #ffff80, #80ff80, #80bfff, #bf80ff);
+}
+
+.switch-desc {
+  display: block;
+  margin-top: 8rpx;
+  color: #171717;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 18rpx;
+  padding: 20rpx 28rpx calc(20rpx + env(safe-area-inset-bottom));
+  background: rgba(246, 246, 244, 0.96);
+  z-index: 20;
+}
+
+.secondary-btn,
+.primary-btn {
+  flex: 1;
+  height: 96rpx;
+  border-radius: 10rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 96rpx;
+  text-align: center;
+}
+
+.secondary-btn {
+  background: #fff;
+  color: #171717;
+  border: 1rpx solid rgba(0, 0, 0, 0.12);
+}
+
+.primary-btn {
+  background: #171717;
+  color: #fff;
+}
