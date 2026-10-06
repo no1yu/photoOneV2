@@ -4,6 +4,7 @@ const app = getApp()
 Page({
   scene: 0,
   data: {
+    title: app.appName,
     isAuthorized: false,
     submitting: false
   },

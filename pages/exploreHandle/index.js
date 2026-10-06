@@ -35,8 +35,9 @@ Page({
     //当前探索功能的下载配置和照片下载状态
     downloadMode: null,
     downloadPrice: 0,
+    payType: 1,
     videoUnitId: '',
-    //1未解锁，2微信支付返回成功，等待后端支付回调成功，3已解锁
+    //1未解锁，2支付返回成功，等待后端支付回调成功，3已解锁
     downloadState: 1,
     downloadDrawerVisible: false,
     downloadDrawerClosing: false,
@@ -941,13 +942,13 @@ Page({
   },
 
   downloadPic() {
-    //微信支付返回成功，等待后端支付回调成功时，根据照片ID继续复查支付结果
+    //支付返回成功，等待后端支付回调成功时，根据照片ID继续复查支付结果
     if (this.data.downloadState === 2) {
       this.downloadPhoto()
       return
     }
 
-    //当前照片已经永久解锁时直接保存原图
+    //当前照片已经解锁时直接保存原图
     if (this.data.downloadState === 3) {
       saveImageFromUrl(this.data.resultUrl).catch(() => {})
       return
@@ -1103,6 +1104,7 @@ Page({
       this.setData({
         downloadMode,
         downloadPrice: res.data.downloadPrice,
+        payType: res.data.payType,
         videoUnitId: res.data.videoUnitId,
         unavailableMessage: downloadMode === 0 ? '当前功能维护中，请稍后再试' : ''
       })
@@ -1139,10 +1141,35 @@ Page({
     }
   },
 
-  createOrder() {
+  async createOrder() {
+    let url = getApp().url + 'order/createOrder?photoId=' + this.data.photoId
+    if (this.data.payType === 2) {
+      wx.showLoading({
+        title: '准备支付中...'
+      })
+      try {
+        //本次支付直接静默登录，只获取临时凭证，不改变业务登录状态
+        const loginRes = await new Promise((resolve, reject) => {
+          wx.login({
+            success: resolve,
+            fail: reject
+          })
+        })
+        url += '&code=' + encodeURIComponent(loginRes.code)
+      } catch (err) {
+        wx.showToast({
+          title: '微信登录失败，请重试',
+          icon: 'none'
+        })
+        return
+      } finally {
+        wx.hideLoading()
+      }
+    }
+
     //每次新的付款操作都创建新订单，取消或失败的旧订单继续保留待支付状态
     request({
-      url: getApp().url + 'order/createOrder?photoId=' + this.data.photoId,
+      url,
       header: {
         token: getToken()
       },
@@ -1160,6 +1187,44 @@ Page({
       }
 
       const order = res.data
+      if (order.type === 2) {
+        if (typeof wx.requestVirtualPayment !== 'function') {
+          wx.showToast({
+            title: '请升级微信后使用虚拟支付',
+            icon: 'none'
+          })
+          return
+        }
+
+        wx.requestVirtualPayment({
+          mode: order.mode,
+          signData: order.signData,
+          paySig: order.paySig,
+          signature: order.signature,
+          success: () => {
+            //虚拟支付返回成功后仍由下载接口核对后端回调结果
+            this.setData({
+              downloadState: 2
+            })
+            this.downloadPhoto()
+          },
+          fail: (err) => {
+            console.log(err)
+            this.setData({
+              downloadState: 1
+            })
+            if (err.errCode === -2 || err.errMsg.indexOf('cancel') !== -1) {
+              return
+            }
+            wx.showToast({
+              title: '支付失败'+ err.errMsg,
+              icon: 'none'
+            })
+          }
+        })
+        return
+      }
+
       wx.requestPayment({
         timeStamp: order.timeStamp,
         nonceStr: order.nonceStr,
@@ -1179,8 +1244,11 @@ Page({
           this.setData({
             downloadState: 1
           })
+          if (err.errMsg.indexOf('cancel') !== -1) {
+            return
+          }
           wx.showToast({
-            title: err.errMsg.indexOf('cancel') !== -1 ? '已取消支付' : '支付失败，请重试',
+            title: '支付失败'+ err.errMsg,
             icon: 'none'
           })
         }
@@ -1201,7 +1269,7 @@ Page({
       loadingText: '下载中...'
     }).then((res) => {
       if (res.code == 200) {
-        //后端发放原图后标记当前照片已永久解锁，作品页以后也可以直接保存
+        //后端发放原图后标记当前照片已解锁，照片保留期间可以在作品页直接保存
         this.setData({
           photoId: res.data.photoId,
           resultUrl: res.data.picUrl,

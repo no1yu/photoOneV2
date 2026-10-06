@@ -29,8 +29,9 @@ Page({
     //高清照下载配置和当前照片的下载状态
     downloadMode: null,
     downloadPrice: 0,
+    payType: 1,
     videoUnitId: '',
-    //1未解锁，2微信支付返回成功，等待后端支付回调成功，3已解锁
+    //1未解锁，2支付返回成功，等待后端支付回调成功，3已解锁
     downloadState: 1,
     downloadDrawerVisible: false,
     downloadDrawerClosing: false,
@@ -47,7 +48,11 @@ Page({
     clothesEnabled: false,
     clothesList: [],
     imageReady: false,
-    updating: false
+    updating: false,
+    //1普通证件照，2高清证件照
+    photoType: 1,
+    switching: false,
+    saving: false
   },
 
   onLoad() {
@@ -104,6 +109,7 @@ Page({
       this.setData({
         downloadMode,
         downloadPrice: res.data.downloadPrice,
+        payType: res.data.payType,
         videoUnitId: res.data.videoUnitId
       });
 
@@ -122,6 +128,13 @@ Page({
         onReward: () => {
           if (!this.unloaded) {
             this.downloadHDPhoto(1);
+          }
+        },
+        onClose: () => {
+          if (!this.unloaded) {
+            this.setData({
+              saving: false
+            });
           }
         },
         onErrorReward: true
@@ -149,24 +162,85 @@ Page({
     }).catch(() => {});
   },
 
+  async switchPhotoType(e) {
+    const type = Number(e.currentTarget.dataset.type);
+    if (type === this.data.photoType || this.data.updating || this.data.switching || this.data.saving || this.data.downloadDrawerVisible) {
+      return;
+    }
+
+    this.setData({
+      switching: true
+    });
+    try {
+      //高清透明照只生成一次，已经生成过时后端会直接返回
+      if (type === 2) {
+        const res = await request({
+          url: app.url + 'api/createIdHdPhoto?photoId=' + this.data.imageData.photoId,
+          header: {
+            token: getToken()
+          },
+          method: 'POST'
+        });
+        if (res.code != 200) {
+          if (res.code == 404) {
+            wx.showToast({
+              title: res.data,
+              icon: 'none'
+            });
+          }
+          return;
+        }
+      }
+      if (this.unloaded) {
+        return;
+      }
+
+      //切换时用当前背景和服装重新制作，制作成功后再切换
+      await this.updateColor(this.data.color, type);
+      if (!this.unloaded) {
+        this.setData({
+          photoType: type,
+          colorType: 2
+        });
+      }
+    } catch (err) {} finally {
+      if (!this.unloaded) {
+        this.setData({
+          switching: false
+        });
+      }
+    }
+  },
+
   toggleBg(e) {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
     const color = e.currentTarget.dataset.color;
     this.setData({
       color,
       colorType: 2
     });
 
-    //微信支付成功或已经解锁时使用高清编辑源，否则只修改免费预览照
-    this.updateColor(color, this.data.downloadState > 1 ? 2 : 1).catch(() => {});
+    this.updateColor(color, this.data.photoType).catch(() => {});
   },
 
   toPick() {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
     this.setData({
       pick: true
     });
   },
 
   pickColor(e) {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
     const color = this.rgbStringToHex(e.detail.color);
     this.setData({
       color,
@@ -174,8 +248,7 @@ Page({
       pick: false
     });
 
-    //微信支付成功或已经解锁时使用高清编辑源，否则只修改免费预览照
-    this.updateColor(color, this.data.downloadState > 1 ? 2 : 1).catch(() => {});
+    this.updateColor(color, this.data.photoType).catch(() => {});
   },
 
   updateColor(color, type) {
@@ -193,13 +266,14 @@ Page({
       kb: this.data.kb,
       render: this.data.render,
       dpi: this.data.dpi,
-      //未解锁时使用预览图，解锁或支付确认期间使用高清图
       hd: type == 2 ? 1 : 0
     };
 
-    wx.showLoading({
-      title: '制作中...'
-    });
+    if (!this.data.switching) {
+      wx.showLoading({
+        title: '制作中...'
+      });
+    }
     this.setData({
       updating: true
     });
@@ -237,7 +311,9 @@ Page({
           updating: false
         });
       }
-      wx.hideLoading();
+      if (!this.data.switching) {
+        wx.hideLoading();
+      }
     });
   },
 
@@ -265,6 +341,10 @@ Page({
   },
 
   updateClothes(category, clothesId) {
+    if (this.data.switching || this.data.saving) {
+      return Promise.reject(new Error('照片处理中'));
+    }
+
     const cancelClothes = category === 0 && clothesId === 0;
     const selectClothes = this.data.clothesList.some((item) => item.category === category && item.clothesId === clothesId);
     if (!cancelClothes && !selectClothes) {
@@ -299,7 +379,7 @@ Page({
         clothesId,
         kb: this.data.kb,
         dpi: this.data.dpi,
-        hd: this.data.downloadState > 1 ? 1 : 0
+        hd: this.data.photoType == 2 ? 1 : 0
       },
       header: {
         token: getToken()
@@ -347,8 +427,11 @@ Page({
     });
   },
 
-  async openSavePhoto(e) {
-    const type = Number(e.currentTarget.dataset.type);
+  async openSavePhoto() {
+    if (this.data.updating || this.data.switching || this.data.saving || this.data.downloadDrawerVisible) {
+      return;
+    }
+
     if (this.data.colorType == 1) {
       wx.showToast({
         title: '您还没有选择背景颜色哦~',
@@ -359,12 +442,12 @@ Page({
     }
 
     //预览照始终免费保存，不受高清照下载模式影响
-    if (type == 1) {
+    if (this.data.photoType === 1) {
       this.saveNormalPhoto();
       return;
     }
 
-    //微信支付返回成功，等待后端支付回调成功时，根据照片ID继续复查支付结果
+    //支付返回成功，等待后端支付回调成功时，根据照片ID继续复查支付结果
     if (this.data.downloadState === 2) {
       this.downloadHDPhoto();
       return;
@@ -372,7 +455,16 @@ Page({
 
     //首次读取失败时，用户点击保存会再读取一次下载配置
     if (this.data.downloadMode === null) {
+      this.setData({
+        saving: true
+      });
       await this.getDownloadSet();
+      if (this.unloaded) {
+        return;
+      }
+      this.setData({
+        saving: false
+      });
     }
 
     if (this.data.downloadMode === null) {
@@ -384,7 +476,7 @@ Page({
     }
 
     const downloadMode = this.data.downloadMode;
-    //已经永久解锁的照片不受后台后来关闭功能影响
+    //已经解锁的照片不受后台后来关闭功能影响
     if (downloadMode === 0 && this.data.downloadState !== 3) {
       wx.showToast({
         title: '当前功能维护中，请稍后再试',
@@ -394,11 +486,6 @@ Page({
     }
 
     if (this.data.downloadState === 3) {
-      try {
-        await this.prepareHDPhoto();
-      } catch (err) {
-        return;
-      }
       this.downloadHDPhoto();
       return;
     }
@@ -483,11 +570,8 @@ Page({
     });
   },
 
-  async executeDownloadMethod(downloadMethod) {
-    //ID3确定下载方式后再生成高清编辑源
-    try {
-      await this.prepareHDPhoto();
-    } catch (err) {
+  executeDownloadMethod(downloadMethod) {
+    if (this.data.updating || this.data.switching || this.data.saving) {
       return;
     }
 
@@ -507,6 +591,10 @@ Page({
   noop() {},
 
   async saveParams() {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
     let kb = parseInt(this.data.kb, 10);
     let dpi = parseInt(this.data.dpi, 10);
 
@@ -524,7 +612,7 @@ Page({
     });
 
     try {
-      await this.updateColor(this.data.color, this.data.downloadState > 1 ? 2 : 1);
+      await this.updateColor(this.data.color, this.data.photoType);
       wx.showToast({
         title: '修改成功',
         icon: 'none',
@@ -533,24 +621,13 @@ Page({
     } catch (err) {}
   },
 
-  async saveNormalPhoto() {
-    //支付结果确认期间不切回预览编辑源，避免覆盖等待解锁的高清成片
-    if (this.data.downloadState === 2) {
-      wx.showToast({
-        title: '支付结果确认中，请稍后重试',
-        icon: 'none'
-      });
-      return;
-    }
-
-    try {
-      await this.updateColor(this.data.color, 1);
-    } catch (err) {
-      return;
-    }
+  saveNormalPhoto() {
+    this.setData({
+      saving: true
+    });
 
     //普通预览保存只记录预览照作品，不会解锁高清下载权
-    request({
+    return request({
       url: app.url + 'api/updateUserPhonto?photoId=' + this.data.imageData.photoId,
       header: {
         token: getToken()
@@ -562,57 +639,27 @@ Page({
         this.setData({
           picUrl: res.data.picUrl
         });
-        saveImageFromUrl(res.data.picUrl)
-          .then(() => {
-            wx.showToast({
-              title: '保存成功',
-              icon: 'success',
-              duration: 2000
-            });
-          })
-          .catch(() => {});
+        return saveImageFromUrl(res.data.picUrl);
       } else if (res.code == 404) {
         wx.showToast({
           title: res.data,
           icon: 'none'
         });
       }
-    }).catch(() => {});
-  },
-
-  async prepareHDPhoto() {
-    //先创建高清照片，再按当前背景颜色和用户填写的DPI生成高清成片
-    const res = await request({
-      url: app.url + 'api/createIdHdPhoto?photoId=' + this.data.imageData.photoId,
-      header: {
-        token: getToken()
-      },
-      method: 'POST',
-      loadingText: '制作中...'
-    });
-
-    if (res.code == 200) {
-      if (this.unloaded) {
-        return;
+    }).catch(() => {}).finally(() => {
+      if (!this.unloaded) {
+        this.setData({
+          saving: false
+        });
       }
-
-      this.setData({
-        'imageData.photoId': res.data
-      });
-      await this.updateColor(this.data.color, 2);
-      return;
-    }
-
-    if (res.code == 404) {
-      wx.showToast({
-        title: res.data,
-        icon: 'none'
-      });
-    }
-    throw new Error(res.data || '高清照制作失败');
+    });
   },
 
   watchAdDownload() {
+    this.setData({
+      saving: true
+    });
+
     //广告加载或播放失败时由激励视频工具直接放行，主动提前关闭不会放行
     if (this.rewardedAd) {
       this.rewardedAd.show();
@@ -621,10 +668,42 @@ Page({
     }
   },
 
-  createOrder() {
+  async createOrder() {
+    this.setData({
+      saving: true
+    });
+
+    let url = app.url + 'order/createOrder?photoId=' + this.data.imageData.photoId;
+    if (this.data.payType === 2) {
+      wx.showLoading({
+        title: '准备支付中...'
+      });
+      try {
+        //本次支付直接静默登录，只获取临时凭证，不改变业务登录状态
+        const loginRes = await new Promise((resolve, reject) => {
+          wx.login({
+            success: resolve,
+            fail: reject
+          });
+        });
+        url += '&code=' + encodeURIComponent(loginRes.code);
+      } catch (err) {
+        this.setData({
+          saving: false
+        });
+        wx.showToast({
+          title: '微信登录失败，请重试',
+          icon: 'none'
+        });
+        return;
+      } finally {
+        wx.hideLoading();
+      }
+    }
+
     //每次新的付款操作都创建新订单，取消或失败的旧订单继续保留待支付状态
     request({
-      url: app.url + 'order/createOrder?photoId=' + this.data.imageData.photoId,
+      url,
       header: {
         token: getToken()
       },
@@ -632,6 +711,9 @@ Page({
       loadingText: '创建订单中...'
     }).then((res) => {
       if (res.code != 200) {
+        this.setData({
+          saving: false
+        });
         if (res.code == 404) {
           wx.showToast({
             title: res.data,
@@ -642,6 +724,47 @@ Page({
       }
 
       const order = res.data;
+      if (order.type === 2) {
+        if (typeof wx.requestVirtualPayment !== 'function') {
+          this.setData({
+            saving: false
+          });
+          wx.showToast({
+            title: '请升级微信后使用虚拟支付',
+            icon: 'none'
+          });
+          return;
+        }
+
+        wx.requestVirtualPayment({
+          mode: order.mode,
+          signData: order.signData,
+          paySig: order.paySig,
+          signature: order.signature,
+          success: () => {
+            //虚拟支付返回成功后仍由下载接口核对后端回调结果
+            this.setData({
+              downloadState: 2
+            });
+            this.downloadHDPhoto();
+          },
+          fail: (err) => {
+            this.setData({
+              downloadState: 1,
+              saving: false
+            });
+            if (err.errCode === -2 || err.errMsg.indexOf('cancel') !== -1) {
+              return;
+            }
+            wx.showToast({
+              title: '支付失败'+ err.errMsg,
+              icon: 'none'
+            });
+          }
+        });
+        return;
+      }
+
       wx.requestPayment({
         timeStamp: order.timeStamp,
         nonceStr: order.nonceStr,
@@ -655,26 +778,44 @@ Page({
               downloadState: 2
             });
             this.downloadHDPhoto();
+          } else {
+            this.setData({
+              saving: false
+            });
           }
         },
         fail: (err) => {
           this.setData({
-            downloadState: 1
+            downloadState: 1,
+            saving: false
           });
+          if (err.errMsg.indexOf('cancel') !== -1) {
+            return;
+          }
           wx.showToast({
-            title: err.errMsg.indexOf('cancel') !== -1 ? '已取消支付' : '支付失败，请重试',
+            title: '支付失败'+ err.errMsg,
             icon: 'none'
           });
         }
       });
-    }).catch(() => {});
+    }).catch(() => {
+      if (!this.unloaded) {
+        this.setData({
+          saving: false
+        });
+      }
+    });
   },
 
   downloadHDPhoto(rewarded = 0) {
+    this.setData({
+      saving: true
+    });
+
     //所有下载都明确传入广告完成状态，0未看广告，1已看完广告
     const url = app.url + 'order/downloadPhoto?photoId=' + this.data.imageData.photoId + '&rewarded=' + rewarded;
 
-    request({
+    return request({
       url,
       header: {
         token: getToken()
@@ -683,12 +824,12 @@ Page({
       loadingText: '下载中...'
     }).then((res) => {
       if (res.code == 200) {
-        //后端发放原图后标记当前照片已永久解锁，后续换背景和保存不再收费
+        //后端发放原图后标记当前照片已解锁，照片保留期间换背景和保存不再收费
         this.setData({
           picUrl: res.data.picUrl,
           downloadState: 3
         });
-        saveImageFromUrl(res.data.picUrl).catch(() => {});
+        return saveImageFromUrl(res.data.picUrl);
       } else if (res.code == 404) {
         //支付回调延迟时保留确认状态，下次点击继续根据照片ID复查
         wx.showToast({
@@ -696,7 +837,13 @@ Page({
           icon: 'none'
         });
       }
-    }).catch(() => {});
+    }).catch(() => {}).finally(() => {
+      if (!this.unloaded) {
+        this.setData({
+          saving: false
+        });
+      }
+    });
   },
 
   rgbStringToHex(rgbString) {
@@ -713,6 +860,10 @@ Page({
   },
 
   onKbInput(event) {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
     let value = parseInt(event.detail.value, 10);
     if (isNaN(value) || value < 0) {
       wx.showToast({
@@ -736,6 +887,10 @@ Page({
   },
 
   onDpiInput(event) {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
     let value = parseInt(event.detail.value, 10);
     if (isNaN(value) || value < 72) {
       wx.showToast({
@@ -759,6 +914,10 @@ Page({
   },
 
   onRenderChange(event) {
+    if (this.data.updating || this.data.switching || this.data.saving) {
+      return;
+    }
+
     const value = parseInt(event.detail.value, 10);
     this.setData({
       render: value

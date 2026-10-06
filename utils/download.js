@@ -25,7 +25,6 @@ export function saveImageFromUrl(url) {
     })
     .finally(() => {
       savingImage = false;
-      wx.hideLoading();
     });
 }
 
@@ -43,11 +42,14 @@ function downloadImage(url) {
       fail: reject
     });
   }).catch((err) => {
-    wx.showToast({
-      title: '下载图片失败，请重试',
-      icon: 'none',
-      duration: 2000
-    });
+    wx.hideLoading();
+    if (!isCancelError(err)) {
+      wx.showToast({
+        title: '下载图片失败，请重试',
+        icon: 'none',
+        duration: 2000
+      });
+    }
     throw err;
   });
 }
@@ -75,7 +77,7 @@ function saveToAlbum(filePath) {
         wx.showToast({
           title: '保存成功',
           icon: 'success',
-          duration: 2000
+          duration: 3000
         });
         resolve(filePath);
       },

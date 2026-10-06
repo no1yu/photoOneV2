@@ -11,11 +11,35 @@ page {
   overflow-x: hidden;
 }
 
+.photo-type-switch {
+  display: flex;
+  margin: 0 100rpx 72rpx;
+  padding: 6rpx;
+  border: 1rpx solid #dedede;
+  border-radius: 999rpx;
+  background: #fff;
+}
+
+.photo-type-item {
+  flex: 1;
+  padding: 22rpx 0;
+  border-radius: 999rpx;
+  color: #666;
+  font-size: 28rpx;
+  font-weight: 700;
+  text-align: center;
+}
+
+.photo-type-item.active {
+  background: #171717;
+  color: #fff;
+}
+
 .container .photo-edit-content {
   position: relative;
   box-sizing: border-box;
   width: 100%;
-  padding: 44rpx 0 36rpx;
+  padding: 28rpx 0 36rpx;
   background-color: #f6f6f4;
   background-image: linear-gradient(45deg, #e7e6e2 25%, transparent 25%),
     linear-gradient(-45deg, #e7e6e2 25%, transparent 25%),
@@ -371,4 +395,51 @@ page {
   width: 100%;
   height: 100%;
   pointer-events: none;
+}
+
+.photo-making-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.photo-making-panel {
+  box-sizing: border-box;
+  width: 420rpx;
+  padding: 64rpx 32rpx;
+  border-radius: 14rpx;
+  background: #fff;
+  text-align: center;
+}
+
+.photo-making-spinner {
+  box-sizing: border-box;
+  width: 72rpx;
+  height: 72rpx;
+  margin: 0 auto 36rpx;
+  border: 6rpx solid #e7e6e2;
+  border-top-color: #171717;
+  border-radius: 50%;
+  animation: photoMakingSpin 800ms linear infinite;
+}
+
+.photo-making-text {
+  color: #333;
+  font-size: 28rpx;
+}
+
+@keyframes photoMakingSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

@@ -1,5 +1,10 @@
 <view class="container"> 
   <view class="photo-edit-content" wx:if="{{imageReady}}">
+    <view class="photo-type-switch">
+      <view class="photo-type-item {{photoType == 1 ? 'active' : ''}}" data-type="1" bindtap="switchPhotoType">标准照</view>
+      <view class="photo-type-item {{photoType == 2 ? 'active' : ''}}" data-type="2" bindtap="switchPhotoType">高清照</view>
+    </view>
+
     <view class="canvas-view" style="background-color:{{bgc}}; width: 240px; height: 336px">
       <!-- 页面始终显示水印，后端下载仍返回无水印原图 -->
       <image class="nowx_mask" src="../../images/wmark2.png" mode="scaleToFill"></image>
@@ -74,7 +79,7 @@
       <van-tab title="高级参数" name="3">
         <van-notice-bar
           scrollable="{{ false }}"
-          text="小提示：KB填0即代表不限制，DPI建议300"
+          text="KB填0代表不限制文件大小"
         />
         <view class="advanced-params">
           <view class="params-wrapper">
@@ -85,6 +90,7 @@
                   class="param-input"
                   type="number"
                   value="{{kb}}"
+                  disabled="{{updating || switching || saving}}"
                   bindinput="onKbInput"
                 />
               </view>
@@ -95,6 +101,7 @@
                   class="param-input"
                   type="number"
                   value="{{dpi}}"
+                  disabled="{{updating || switching || saving}}"
                   bindinput="onDpiInput"
                 />
               </view>
@@ -108,13 +115,13 @@
               <view class="param-item">
                 <radio-group bindchange="onRenderChange" class="render-radio-group">
                   <label class="radio-label">
-                    <radio value="0" checked="{{render == 0}}"/> 仅换背景色
+                    <radio value="0" checked="{{render == 0}}" disabled="{{updating || switching || saving}}"/> 仅换背景色
                   </label>
                   <label class="radio-label">
-                    <radio value="1" checked="{{render == 1}}"/> 上下渐变效果
+                    <radio value="1" checked="{{render == 1}}" disabled="{{updating || switching || saving}}"/> 上下渐变效果
                   </label>
                   <label class="radio-label">
-                    <radio value="2" checked="{{render == 2}}"/> 中心渐变效果
+                    <radio value="2" checked="{{render == 2}}" disabled="{{updating || switching || saving}}"/> 中心渐变效果
                   </label>
                 </radio-group>
               </view>
@@ -127,20 +134,25 @@
     <!-- 保存按钮区域 -->
     <view class="download-view">
 
-      <!-- 背景和换装页面共用预览照与高清照保存按钮 -->
+      <!-- 保存当前选择的普通或高清证件照 -->
       <view wx:if="{{ active == '1' || active == '2' }}" class="button-group">
-        <!-- 预览照永久免费，高清照按照后台下载模式处理 -->
-        <button bindtap="openSavePhoto" data-type="1" type="default" class="save-btn">保存预览照</button>
-        <button bindtap="openSavePhoto" data-type="2" type="default" class="save-btn">保存高清照</button>
+        <button bindtap="openSavePhoto" disabled="{{updating || switching || saving}}" type="default" class="save-btn single-btn">保存照片</button>
       </view>
 
       <!-- 高级设置页面只保存尺寸和分辨率参数 -->
       <view wx:elif="{{ active == '3' }}" class="button-group">
-        <button bindtap="saveParams" type="default" class="save-btn single-btn">保存修改</button>
+        <button bindtap="saveParams" disabled="{{updating || switching || saving}}" type="default" class="save-btn single-btn">保存修改</button>
       </view>
     </view>
 
     <color-picker bindchangeColor="pickColor" initColor="rgb(7,193,96)" show="{{pick}}" />
+  </view>
+
+  <view wx:if="{{switching}}" class="photo-making-mask" catchtap="noop" catchtouchmove="noop">
+    <view class="photo-making-panel">
+      <view class="photo-making-spinner"></view>
+      <text class="photo-making-text">正在制作中，请稍候...</text>
+    </view>
   </view>
 
   <view wx:if="{{downloadDrawerVisible}}" class="download-drawer-mask {{downloadDrawerClosing ? 'closing' : ''}}" catchtap="closeDownloadDrawer" catchtouchmove="noop">

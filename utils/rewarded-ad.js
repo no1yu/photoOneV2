@@ -19,7 +19,7 @@ function canUseDisableFallbackSharePage() {
 }
 
 export function createRewardedAd(options) {
-  const { adUnitId, onReward, onErrorReward = true } = options;
+  const { adUnitId, onReward, onClose, onErrorReward = true } = options;
   let pendingReward = false;
   let rewardedVideoAd;
 
@@ -76,6 +76,7 @@ export function createRewardedAd(options) {
     }
 
     pendingReward = false;
+    onClose && onClose();
     wx.showToast({
       title: '需要看完广告才能继续哦~',
       icon: 'none',

@@ -229,10 +229,14 @@ Page({
           success: () => {
             wx.showToast({
               title: '保存成功',
-              icon: 'success'
+              icon: 'success',
+              duration: 3000
             });
           },
-          fail: () => {
+          fail: (err) => {
+            if (err.errMsg.indexOf('cancel') !== -1) {
+              return;
+            }
             wx.showToast({
               title: '请开启相册权限后重试',
               icon: 'none'
