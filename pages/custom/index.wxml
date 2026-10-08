@@ -27,6 +27,6 @@
   </view>
 
   <view class="bottom-bar">
-    <button bindtap="addSize" class="save-button">保存尺寸</button>
+    <button bindtap="addSize" class="save-button" disabled="{{submitting}}" loading="{{submitting}}">保存尺寸</button>
   </view>
 </view>

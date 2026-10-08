@@ -21,7 +21,8 @@ Page({
     px: '0*0 px',
     size: '0*0 mm',
     widthMm:'',
-    heightMm:''
+    heightMm:'',
+    submitting: false
   },
 
   onLoad() {
@@ -92,6 +93,10 @@ Page({
   },
 
   addSize() {
+    if (this.data.submitting) {
+      return;
+    }
+
     const name = this.data.name.trim();
     const width = parseInt(this.data.width, 10);
     const height = parseInt(this.data.height, 10);
@@ -156,6 +161,10 @@ Page({
       dpi: dpi
     };
 
+    this.setData({
+      submitting: true
+    });
+
     request({
       url: app.url + 'item/saveCustom',
       method: 'POST',
@@ -201,6 +210,10 @@ Page({
             mask: true
           });
         }
+      }).catch(() => {}).finally(() => {
+        this.setData({
+          submitting: false
+        });
       });
   },
 

@@ -11,7 +11,8 @@ Page({
     cameraVisible: true,
     cameraImg: false,
     photoSrc: '',
-    detail: {}
+    detail: {},
+    submitting: false
   },
 
 
@@ -88,9 +89,17 @@ Page({
 
   // 去上传抠图编辑
   goEditPhoto() {
-    if (this.data.photoSrc) {
-      this.Uploadimg(this.data.photoSrc)
+    if (this.data.submitting || !this.data.photoSrc) {
+      return
     }
+    this.setData({
+      submitting: true
+    })
+    this.Uploadimg(this.data.photoSrc).finally(() => {
+      this.setData({
+        submitting: false
+      })
+    })
   },
 
   // 返回拍照
@@ -130,19 +139,19 @@ Page({
       return;
     }
 
-    this.imgUpload(filePath)
+    return this.imgUpload(filePath)
   },
 
   // 上传原图
   imgUpload(filePath) {
-    uploadFile({
+    return uploadFile({
       url: app.url+'upload',
       filePath: filePath, 
       auth: true,
       loadingText: '图片检测中'
     }).then((data) => {
         if (data.code == 200) {
-          this.imageDivision(data.data);
+          return this.imageDivision(data.data);
         } else if (data.code == 404) {
           wx.showToast({
             title: data.data,
@@ -155,7 +164,7 @@ Page({
 
   imageDivision(photoId) {
     let type = this.data.detail.category == 4 ? 2 : 1;
-    request({
+    return request({
       url: app.url + 'api/createIdPhoto',
       data: {
         "photoId": photoId,
@@ -170,11 +179,14 @@ Page({
       loadingText: '制作中...'
     }).then((res) => {
         if (res.code == 200) {
-          wx.navigateTo({
-            url: '/pages/edit/index',
-            success(navigateRes) {
-              navigateRes.eventChannel.emit('photoEditData', res.data);
-            }
+          return new Promise((resolve) => {
+            wx.navigateTo({
+              url: '/pages/edit/index',
+              success(navigateRes) {
+                navigateRes.eventChannel.emit('photoEditData', res.data);
+              },
+              complete: resolve
+            });
           });
         } else if (res.code == 404) {
           wx.showToast({

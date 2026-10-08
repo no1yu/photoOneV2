@@ -522,7 +522,7 @@ Page({
       '#FFC300': '黄色背景'
     };
     const renderNames = ['纯色效果', '上下渐变', '中心渐变'];
-    const clothesNames = ['原服装', '男装', '女装'];
+    const clothesNames = ['原服装', '男装', '女装', '儿童装'];
     const backgroundName = backgroundNames[this.data.color.toUpperCase()] || '自定义背景';
     this.setData({
       downloadDrawerVisible: true,
